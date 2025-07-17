@@ -1,0 +1,97 @@
+---
+title: "Machine Learning in Practice: From Data to Deployment"
+publishedAt: "2025-01-10"
+summary: "Practical insights from my Machine Learning internship at YBI Foundation, covering the complete ML pipeline from data preprocessing to model deployment."
+---
+
+During my Machine Learning internship at YBI Foundation, I worked on several projects that gave me hands-on experience with the complete ML pipeline. Here's what I learned about taking ML projects from concept to production.
+
+## The ML Pipeline
+
+A successful machine learning project involves much more than just training a model. Here's the typical workflow I follow:
+
+### 1. Data Collection & Preprocessing
+
+```python
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+
+# Example data preprocessing pipeline
+def preprocess_data(df):
+    # Handle missing values
+    df = df.fillna(df.mean(numeric_only=True))
+    
+    # Encode categorical variables
+    categorical_columns = df.select_dtypes(include=['object']).columns
+    le = LabelEncoder()
+    for col in categorical_columns:
+        df[col] = le.fit_transform(df[col])
+    
+    # Scale numerical features
+    scaler = StandardScaler()
+    numerical_columns = df.select_dtypes(include=[np.number]).columns
+    df[numerical_columns] = scaler.fit_transform(df[numerical_columns])
+    
+    return df
+```
+
+### 2. Feature Engineering
+
+Feature engineering often makes the biggest difference in model performance. Some techniques I frequently use:
+
+- Creating interaction features
+- Polynomial features for non-linear relationships
+- Time-based features for temporal data
+- Domain-specific feature extraction
+
+### 3. Model Selection & Training
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score, GridSearchCV
+
+# Model selection with cross-validation
+def train_model(X, y):
+    # Define parameter grid
+    param_grid = {
+        'n_estimators': [100, 200, 300],
+        'max_depth': [10, 20, None],
+        'min_samples_split': [2, 5, 10]
+    }
+    
+    # Grid search with cross-validation
+    rf = RandomForestClassifier(random_state=42)
+    grid_search = GridSearchCV(rf, param_grid, cv=5, scoring='accuracy')
+    grid_search.fit(X, y)
+    
+    return grid_search.best_estimator_
+```
+
+## Real-World Applications
+
+### Computer Vision Project
+Worked on an image classification system using CNN architectures, achieving 94% accuracy on test data.
+
+### NLP Sentiment Analysis
+Developed a sentiment analysis model for customer reviews using BERT embeddings and fine-tuning.
+
+### Predictive Analytics
+Built time series forecasting models for business metrics using LSTM networks.
+
+## Key Learnings
+
+1. **Data Quality Matters Most**: Spending time on data cleaning and validation saves hours later
+2. **Start Simple**: Begin with baseline models before moving to complex architectures
+3. **Monitor Everything**: Track model performance, data drift, and system metrics
+4. **Automate When Possible**: Use MLOps tools for reproducible pipelines
+
+## Tools & Technologies
+
+- **Python**: Primary language for ML development
+- **Scikit-learn**: For traditional ML algorithms
+- **TensorFlow/Keras**: For deep learning projects
+- **Pandas/NumPy**: For data manipulation
+- **Jupyter Notebooks**: For experimentation and prototyping
+
+The experience at YBI Foundation taught me that successful ML projects require both technical skills and business understanding. The key is building solutions that not only perform well on metrics but also solve real business problems.

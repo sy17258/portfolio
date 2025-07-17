@@ -1,0 +1,290 @@
+---
+title: "Full-Stack Hotel Management System: From Concept to Deployment"
+publishedAt: "2024-12-20"
+summary: "Deep dive into building a comprehensive hotel management system using modern web technologies, covering both frontend and backend architecture decisions."
+---
+
+Building a full-stack hotel management system was one of my most challenging and rewarding projects. In this post, I'll walk through the technical decisions, architecture choices, and lessons learned during development.
+
+## Project Overview
+
+The hotel management system needed to handle:
+- Room booking and availability management
+- Guest check-in/check-out processes
+- Staff management and role-based access
+- Billing and payment processing
+- Inventory management
+- Reporting and analytics
+
+## Technology Stack
+
+### Frontend
+- **React** with TypeScript for type safety
+- **Next.js** for server-side rendering and routing
+- **TailwindCSS** for responsive design
+- **React Hook Form** for form management
+- **React Query** for server state management
+
+### Backend
+- **Node.js** with Express.js framework
+- **PostgreSQL** for relational data storage
+- **Prisma** as ORM for database operations
+- **JWT** for authentication
+- **Stripe API** for payment processing
+
+## Architecture Decisions
+
+### Database Design
+
+```sql
+-- Core tables for hotel management
+CREATE TABLE hotels (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    address TEXT,
+    contact_info JSONB,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE rooms (
+    id SERIAL PRIMARY KEY,
+    hotel_id INTEGER REFERENCES hotels(id),
+    room_number VARCHAR(10) UNIQUE NOT NULL,
+    room_type VARCHAR(50),
+    capacity INTEGER,
+    rate DECIMAL(10,2),
+    amenities JSONB,
+    status VARCHAR(20) DEFAULT 'available'
+);
+
+CREATE TABLE bookings (
+    id SERIAL PRIMARY KEY,
+    room_id INTEGER REFERENCES rooms(id),
+    guest_name VARCHAR(255),
+    guest_email VARCHAR(255),
+    guest_phone VARCHAR(20),
+    check_in DATE,
+    check_out DATE,
+    total_amount DECIMAL(10,2),
+    status VARCHAR(20) DEFAULT 'confirmed',
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+### API Design
+
+RESTful API with proper error handling and validation:
+
+```javascript
+// Room availability endpoint
+app.get('/api/rooms/availability', async (req, res) => {
+  try {
+    const { checkIn, checkOut, guests } = req.query;
+    
+    // Validate dates
+    if (!checkIn || !checkOut) {
+      return res.status(400).json({ 
+        error: 'Check-in and check-out dates are required' 
+      });
+    }
+    
+    // Query available rooms
+    const availableRooms = await prisma.room.findMany({
+      where: {
+        capacity: { gte: parseInt(guests) || 1 },
+        status: 'available',
+        NOT: {
+          bookings: {
+            some: {
+              OR: [
+                {
+                  AND: [
+                    { check_in: { lte: new Date(checkIn) } },
+                    { check_out: { gt: new Date(checkIn) } }
+                  ]
+                },
+                {
+                  AND: [
+                    { check_in: { lt: new Date(checkOut) } },
+                    { check_out: { gte: new Date(checkOut) } }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      },
+      include: {
+        hotel: true
+      }
+    });
+    
+    res.json(availableRooms);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+## Frontend Implementation
+
+### Booking Component
+
+```jsx
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+const BookingForm = ({ roomId }) => {
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const queryClient = useQueryClient();
+  
+  const bookingMutation = useMutation({
+    mutationFn: async (bookingData) => {
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(bookingData)
+      });
+      
+      if (!response.ok) {
+        throw new Error('Booking failed');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['rooms']);
+      // Show success message
+    }
+  });
+  
+  const onSubmit = (data) => {
+    bookingMutation.mutate({
+      ...data,
+      roomId,
+      totalAmount: calculateTotal(data.checkIn, data.checkOut)
+    });
+  };
+  
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700">
+          Guest Name
+        </label>
+        <input
+          {...register('guestName', { required: 'Guest name is required' })}
+          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+        />
+        {errors.guestName && (
+          <p className="text-red-500 text-sm">{errors.guestName.message}</p>
+        )}
+      </div>
+      
+      {/* More form fields... */}
+      
+      <button
+        type="submit"
+        disabled={bookingMutation.isLoading}
+        className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+      >
+        {bookingMutation.isLoading ? 'Booking...' : 'Book Room'}
+      </button>
+    </form>
+  );
+};
+```
+
+### Dashboard Analytics
+
+```jsx
+import { Line, Bar } from 'react-chartjs-2';
+import { useQuery } from '@tanstack/react-query';
+
+const Dashboard = () => {
+  const { data: analytics } = useQuery({
+    queryKey: ['analytics'],
+    queryFn: () => fetch('/api/analytics').then(res => res.json())
+  });
+  
+  const occupancyData = {
+    labels: analytics?.occupancyTrend?.map(item => item.date) || [],
+    datasets: [{
+      label: 'Occupancy Rate (%)',
+      data: analytics?.occupancyTrend?.map(item => item.rate) || [],
+      borderColor: 'rgb(59, 130, 246)',
+      backgroundColor: 'rgba(59, 130, 246, 0.1)'
+    }]
+  };
+  
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold">Total Rooms</h3>
+        <p className="text-3xl font-bold text-blue-600">{analytics?.totalRooms}</p>
+      </div>
+      
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold">Occupied Rooms</h3>
+        <p className="text-3xl font-bold text-green-600">{analytics?.occupiedRooms}</p>
+      </div>
+      
+      <div className="col-span-2">
+        <Line data={occupancyData} options={{ responsive: true }} />
+      </div>
+    </div>
+  );
+};
+```
+
+## Key Features Implemented
+
+### 1. Real-time Room Availability
+- Live updates using WebSocket connections
+- Optimistic UI updates for better user experience
+
+### 2. Role-based Access Control
+- Admin, Manager, and Staff roles with different permissions
+- JWT-based authentication with refresh tokens
+
+### 3. Payment Integration
+- Stripe integration for secure payment processing
+- Support for partial payments and refunds
+
+### 4. Reporting System
+- Automated daily, weekly, and monthly reports
+- Export functionality for Excel and PDF formats
+
+## Challenges & Solutions
+
+### 1. Concurrent Booking Prevention
+**Problem**: Multiple users trying to book the same room simultaneously.
+**Solution**: Implemented database-level constraints and optimistic locking.
+
+### 2. Complex Pricing Logic
+**Problem**: Different rates for weekends, seasons, and special events.
+**Solution**: Created a flexible pricing engine with configurable rules.
+
+### 3. Performance Optimization
+**Problem**: Slow queries for availability checking.
+**Solution**: Added database indexing and implemented caching with Redis.
+
+## Deployment & DevOps
+
+- **Frontend**: Deployed on Vercel with automatic deployments
+- **Backend**: Docker containers on AWS ECS
+- **Database**: AWS RDS PostgreSQL with automated backups
+- **CI/CD**: GitHub Actions for automated testing and deployment
+
+## Results & Metrics
+
+- **Performance**: Average page load time under 2 seconds
+- **Scalability**: Handles up to 1000 concurrent users
+- **Reliability**: 99.9% uptime with proper error handling
+- **User Experience**: Reduced booking time from 10 minutes to 3 minutes
+
+This project taught me the importance of proper planning, choosing the right tools, and building with scalability in mind. The experience gained from handling real-world requirements like concurrent bookings and payment processing has been invaluable for my development career.
