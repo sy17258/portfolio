@@ -1,10 +1,10 @@
-# Shivam Yadav - Portfolio Website [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fsy17258%2Fportfolio)
+# Shivam Yadav - Portfolio Website
 
 A modern, responsive portfolio website showcasing my journey as a Full-Stack Developer and MCA Graduate. Built with cutting-edge technologies and optimized for performance.
 
 ## 🚀 Live Demo
 
-Visit my portfolio at: [shivamyadav.dev](https://shivamyadav.dev)
+Visit my portfolio at: [Portfolio](https://tecportfolio.netlify.app/))
 
 ## ✨ Features
 
@@ -119,30 +119,6 @@ portfolio/
 ├── package.json
 └── README.md
 ```
-
-## 🚀 Deployment
-
-### Deploy on Vercel (Recommended)
-
-1. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "Initial commit"
-   git push origin main
-   ```
-
-2. **Deploy to Vercel**
-   - Visit [vercel.com](https://vercel.com)
-   - Import your GitHub repository
-   - Deploy with default settings
-
-### Other Platforms
-
-This project can also be deployed on:
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
 
 ## 🎨 Customization
 
