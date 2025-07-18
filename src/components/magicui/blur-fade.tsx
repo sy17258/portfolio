@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion, useInView, Variants } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useMemo } from "react";
 
 interface BlurFadeProps {
   children: React.ReactNode;
@@ -31,28 +31,53 @@ const BlurFade = ({
   blur = "6px",
 }: BlurFadeProps) => {
   const ref = useRef(null);
-  const inViewResult = useInView(ref, { once: true, margin: inViewMargin as any, amount: 0.3 });
+  const inViewResult = useInView(ref, { 
+    once: true, 
+    margin: inViewMargin as any,
+    amount: 0.3 
+  });
   const isInView = inView ? inViewResult : true;
-  const defaultVariants: Variants = {
-    hidden: { y: yOffset, opacity: 0, filter: `blur(${blur})` },
-    visible: { y: -yOffset, opacity: 1, filter: `blur(0px)` },
-  };
+  
+  // Memoize variants to prevent unnecessary re-renders
+  const defaultVariants: Variants = useMemo(() => ({
+    hidden: { 
+      y: yOffset, 
+      opacity: 0, 
+      filter: `blur(${blur})`,
+      scale: 0.95
+    },
+    visible: { 
+      y: 0, 
+      opacity: 1, 
+      filter: "blur(0px)",
+      scale: 1
+    },
+  }), [yOffset, blur]);
+  
   const combinedVariants = variant || defaultVariants;
   
+  // Memoize transition config
+  const transition = useMemo(() => ({
+    delay: delay,
+    duration,
+    ease: [0.4, 0.0, 0.2, 1] as const, // Custom easing for smoother animation
+    type: "spring" as const,
+    stiffness: 300,
+    damping: 30,
+  }), [delay, duration]);
+  
   return (
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       <motion.div
         ref={ref}
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
         exit="hidden"
         variants={combinedVariants}
-        transition={{
-          delay: delay,
-          duration,
-          ease: "easeOut",
-        }}
-        className={className}
+        transition={transition}
+        className={cn(className)}
+        // Optimize for performance
+        style={{ willChange: 'transform, opacity, filter' }}
       >
         {children}
       </motion.div>

@@ -121,7 +121,7 @@ export const DATA = {
   projects: [
     {
       title: "Gesture-Controlled Media Player",
-      href: "https://gesture-controlled-media-player.vercel.app",
+      href: "https://gesturecontroll.netlify.app/",
       dates: "January 2025 - April 2025",
       active: true,
       description:
