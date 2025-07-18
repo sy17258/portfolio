@@ -120,6 +120,38 @@ export const DATA = {
   
   projects: [
     {
+      title: "Hotel Management System",
+      href: "https://kutkuthotel.me/",
+      dates: "August 2023 - December 2023",
+      active: true,
+      description:
+        "Developed a comprehensive hotel management system with features for room booking, guest management, staff administration, and billing. Implemented real-time room availability tracking, automated check-in/check-out processes, and integrated payment gateway. Features include dashboard analytics, guest history management, and automated email notifications for bookings and confirmations.",
+      technologies: [
+        "React",
+        "Node.js",
+        "Express.js",
+        "MongoDB",
+        "JavaScript",
+        "Bootstrap",
+        "JWT Authentication",
+        "Stripe API",
+        "Email Integration",
+        "REST APIs",
+      ],
+      links: [
+        {
+          type: "Live Website",
+          href: "https://kutkuthotel.me/",
+        },
+        {
+          type: "Source Code",
+          href: "https://github.com/sy17258/hotelbookingsaasapp",
+        },
+      ],
+      image: "hotel.jpg",
+      video: "",
+    },
+    {
       title: "Gesture-Controlled Media Player",
       href: "https://gesturecontroll.netlify.app/",
       dates: "January 2025 - April 2025",
@@ -146,8 +178,8 @@ export const DATA = {
           href: "https://github.com/sy17258/-Gesture-controlled-media-player",
         },
       ],
-      image: "",
-      video: "https://pub-83c5db439b40468498f97946200806f7.r2.dev/chat-collect.mp4",
+      image: "gesture.jpg",
+      video: "",
     },
     {
       title: "AI Image Enhancer Platform",
@@ -176,8 +208,8 @@ export const DATA = {
           href: "https://github.com/sy17258/Image_enhancer",
         },
       ],
-      image: "",
-      video: "https://cdn.magicui.design/bento-grid.mp4",
+      image: "enhancer.jpg",
+      video: "",
     },
     {
       title: "MkCaters - Catering Management System",
@@ -205,38 +237,6 @@ export const DATA = {
       ],
       image: "",
       video: "https://cdn.llm.report/openai-demo.mp4",
-    },
-    {
-      title: "Hotel Management System",
-      href: "https://hotel-management-system.vercel.app",
-      dates: "August 2023 - December 2023",
-      active: true,
-      description:
-        "Developed a comprehensive hotel management system with features for room booking, guest management, staff administration, and billing. Implemented real-time room availability tracking, automated check-in/check-out processes, and integrated payment gateway. Features include dashboard analytics, guest history management, and automated email notifications for bookings and confirmations.",
-      technologies: [
-        "React",
-        "Node.js",
-        "Express.js",
-        "MongoDB",
-        "JavaScript",
-        "Bootstrap",
-        "JWT Authentication",
-        "Stripe API",
-        "Email Integration",
-        "REST APIs",
-      ],
-      links: [
-        {
-          type: "Live Website",
-          href: "https://hotel-management-system.vercel.app",
-        },
-        {
-          type: "Source Code",
-          href: "https://github.com/sy17258/hotelbookingsaasapp",
-        },
-      ],
-      image: "",
-      video: "https://cdn.magicui.design/bento-grid.mp4",
     },
   ],
   
