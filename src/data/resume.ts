@@ -148,7 +148,7 @@ export const DATA = {
           href: "https://github.com/sy17258/hotelbookingsaasapp",
         },
       ],
-      image: "hotel.jpg",
+      image: "/hotel.jpg",
       video: "",
     },
     {
@@ -178,7 +178,7 @@ export const DATA = {
           href: "https://github.com/sy17258/-Gesture-controlled-media-player",
         },
       ],
-      image: "gesture.jpg",
+      image: "/gesture.jpg",
       video: "",
     },
     {
@@ -208,7 +208,7 @@ export const DATA = {
           href: "https://github.com/sy17258/Image_enhancer",
         },
       ],
-      image: "enhancer.jpg",
+      image: "/enhancer.jpg",
       video: "",
     },
     {
