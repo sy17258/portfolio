@@ -1,6 +1,7 @@
 import Navbar from "@/components/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Chatbot } from "@/components/chatbot";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next";
@@ -133,6 +134,7 @@ export default function RootLayout({
                 {children}
               </main>
               <Navbar />
+              <Chatbot />
             </div>
           </TooltipProvider>
         </ThemeProvider>

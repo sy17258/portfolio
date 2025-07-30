@@ -183,4 +183,37 @@
   .text-pretty {
     text-wrap: pretty;
   }
+  
+  /* Chatbot specific utilities */
+  .chatbot-shadow {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+  
+  .chatbot-message-user {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary)) 100%);
+  }
+  
+  .chatbot-message-assistant {
+    background: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+  }
+  
+  .chatbot-button-pulse {
+    animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+  }
+  
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 hsla(var(--primary), 0.7);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 10px hsla(var(--primary), 0);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 hsla(var(--primary), 0);
+    }
+  }
 }
